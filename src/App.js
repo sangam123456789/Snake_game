@@ -16,8 +16,15 @@ export default function Home() {
       x: totalGridSize / 2,
       y: totalGridSize / 2 + 1,
     },
+    {
+      x: totalGridSize / 2,
+      y: totalGridSize / 2 + 2,
+    },
+    {
+      x: totalGridSize / 2,
+      y: totalGridSize / 2 + 3,
+    },
   ];
-
 
   // Game State
   const [score, setScore] = useState(0);
@@ -27,6 +34,8 @@ export default function Home() {
   });
   const [snake, setSnake] = useState(snakeIntialPosition);
   const [direction, setDirection] = useState("LEFT");
+  const [gameStarted, setGameStarted] = useState(false);
+  const [hoveredCell, setHoveredCell] = useState({ x: -1, y: -1 });
 
   function renderBoard() {
     let cellArray = [];
@@ -38,6 +47,7 @@ export default function Home() {
         let isFood = food.x === row && food.y === col;
         let isSnakeHead = snake[0].x === row && snake[0].y === col;
         let isSnakeBody = snake.some((segment, index) => index !== 0 && segment.x === row && segment.y === col);
+        let isHovered = hoveredCell.x === row && hoveredCell.y === col; // Check if the cell is currently hovered over
   
         if (isFood) {
           classes += " food";
@@ -48,17 +58,28 @@ export default function Home() {
               onMouseEnter={handleFoodHover} // Only bind event to food cell
             ></div>
           );
-        } else {
-          if (isSnakeHead) {
-            classes += " snake-head";
-          } else if (isSnakeBody) {
-            classes += " snake";
-          }
-  
+        } else if (isSnakeHead || isSnakeBody) {
+          // Subtract 10 points when the mouse is hovered over a snake segment
+          classes += " snake";
+          if(isSnakeHead)classes += " snake-head";
           cellArray.push(
             <div
               key={`${row}-${col}`}
               className={classes}
+              onMouseEnter={() => handleSnakeHover(row, col)}
+            ></div>
+          );
+        } else {
+          // Apply hover effect class when hovered
+          if (isHovered) {
+            classes += " hover";
+          }
+          cellArray.push(
+            <div
+              key={`${row}-${col}`}
+              className={classes}
+              onMouseEnter={() => setHoveredCell({ x: row, y: col })} // Track mouse enter
+              onMouseLeave={() => setHoveredCell({ x: -1, y: -1 })} // Track mouse leave
             ></div>
           );
         }
@@ -68,8 +89,6 @@ export default function Home() {
     return cellArray;
   }
   
-  
-
   function handleFoodHover() {
     // Generate new random coordinates for the food
     let randomX = Math.floor(Math.random() * totalGridSize);
@@ -82,20 +101,10 @@ export default function Home() {
     });
   }
 
-  function renderFood() {
-    let randomX = Math.floor(Math.random() * totalGridSize);
-    let randomY = Math.floor(Math.random() * totalGridSize);
-
-    setFood({
-      x: randomX,
-      y: randomY,
-    });
+  function handleSnakeHover(x, y) {
+    // Subtract 10 points when the mouse is hovered over a snake segment
+    setScore((sco) => sco - 10);
   }
-
-  // function gameOver() {
-  //   setSnake(snakeIntialPosition);
-  //   setScore(0);
-  // }
 
   function updateDirection() {
     let new_dir = Math.floor(Math.random() * 4);
@@ -116,9 +125,27 @@ export default function Home() {
     if (new_dir === 1) setDirection("LEFT");
     if (new_dir === 2) setDirection("DOWN");
     if (new_dir === 3) setDirection("RIGHT");
-    
   }
  
+  function startGame() {
+    setGameStarted(true);
+  }
+  
+  function gameOver() {
+    // Reset the game state
+    setSnake(snakeIntialPosition);
+    setScore(0);
+    // Show game over alert
+    alert("Game Over!");
+  }
+
+  useEffect(() => {
+    // Check if the score is -10 or less
+    if (score <= -10) {
+      gameOver(); // Trigger game over function
+    }
+  }, [score]);
+  
   useEffect(() => {
     if (
       snake[0].x <= 0 && direction === "UP" ||
@@ -130,12 +157,13 @@ export default function Home() {
     }
   }, [snake, direction]); // Add snake and direction as dependencies
   
-
   function updateGame() {
-    
-    console.log(direction)
+
+    if((snake[0].x * snake[0].y) % 7 == 0){updateDirection();console.log(direction)}
+
+
     let newSnake = [...snake];
-    if (direction === "UP") {//console.log(newSnake[0].y)
+    if (direction === "UP") {
       newSnake.unshift({ x: newSnake[0].x - 1, y: newSnake[0].y });
     }
     if (direction === "DOWN") {
@@ -147,21 +175,22 @@ export default function Home() {
     if (direction === "RIGHT") {
       newSnake.unshift({ x: newSnake[0].x, y: newSnake[0].y + 1 });
     }
-
     newSnake.pop()
     setSnake(newSnake);
   }
 
   // Handle Events and Effects
   useEffect(() => {
-    let moveSnake = setInterval(updateGame, 350);
+    let moveSnake;
+    if (gameStarted) {
+      moveSnake = setInterval(updateGame, 150);
+    }
     return () => clearInterval(moveSnake);
   });
 
-  
-
   return (
     <main className='main'>
+      <button onClick={startGame}>Start Game</button>
       <div className='score'>
         Score : <span>{score}</span>
       </div>
@@ -169,3 +198,4 @@ export default function Home() {
     </main>
   );
 }
+``

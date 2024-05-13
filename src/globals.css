@@ -4,7 +4,7 @@
   }
   
   .main {
-    background-color: black;
+    background-color: rgb(250, 250, 250);
     height: 100vh;
     display: flex;
     align-items: center;
@@ -17,6 +17,7 @@
   .score {
     font-size: 20px;
     font-weight: bold;
+    background-color: black;
   }
   
   .board {
@@ -25,23 +26,29 @@
     grid-template-rows: repeat(20, 30px);
     width: max-content;
     gap: 1px;
-    border: 1px solid #111;
+    border: 1px solid #e1e1e1;
   }
   
   .cell {
     width: 30px;
     height: 30px;
-    background-color: #fff;
+    background-color: #000000;
   }
   
   .food {
-    background-color: red;
+    background-color: blue;
   }
   
   .snake {
-    background-color: green;
+    background-color: red;
   }
   
   .snake-head {
-    background-color: black;
+    background-color: red;
+  }
+
+  .hover {
+    width: 30px;
+    height: 30px;
+    background-color: green;
   }
