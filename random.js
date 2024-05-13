@@ -18,7 +18,6 @@ export default function Home() {
     },
   ];
 
-
   // Game State
   const [score, setScore] = useState(0);
   const [food, setFood] = useState({
@@ -37,38 +36,34 @@ export default function Home() {
   
         let isFood = food.x === row && food.y === col;
         let isSnakeHead = snake[0].x === row && snake[0].y === col;
-        let isSnakeBody = snake.some((segment, index) => index !== 0 && segment.x === row && segment.y === col);
+        let isSnake = snake.some((ele) => ele.x === row && ele.y === col);
   
         if (isFood) {
-          classes += " food";
+          classes = `${classes} food`;
           cellArray.push(
             <div
               key={`${row}-${col}`}
               className={classes}
-              onMouseEnter={handleFoodHover} // Only bind event to food cell
+              onMouseEnter={handleFoodHover}
             ></div>
           );
-        } else {
-          if (isSnakeHead) {
-            classes += " snake-head";
-          } else if (isSnakeBody) {
-            classes += " snake";
+        } 
+        if (isSnake) {
+            classes = `${classes} snake`;
           }
   
-          cellArray.push(
-            <div
-              key={`${row}-${col}`}
-              className={classes}
-            ></div>
-          );
-        }
+          if (isSnakeHead) {
+            classes = `${classes} snake-head`;
+          }
+  
+          let cell = <div key={`${row}-${col}`} className={classes}></div>;
+  
+          cellArray.push(cell);
       }
     }
   
     return cellArray;
   }
-  
-  
 
   function handleFoodHover() {
     // Generate new random coordinates for the food
@@ -92,31 +87,31 @@ export default function Home() {
     });
   }
 
-  // function gameOver() {
-  //   setSnake(snakeIntialPosition);
-  //   setScore(0);
-  // }
+  function gameOver() {
+    setSnake(snakeIntialPosition);
+    setScore(0);
+  }
 
   function updateGame() {
     // Checking For Game Over
     if (
-      snake[0].x <= 0 ||
-      snake[0].x >= 20 ||
-      snake[0].y <= 0 ||
-      snake[0].y >= 20
+      snake[0].x < 0 ||
+      snake[0].x > 20 ||
+      snake[0].y < 0 ||
+      snake[0].y > 20
     ) {
-      updateDirection();
-      //return;
+      gameOver();
+      return;
     }
 
     // Checking If snake bit itself
-    // const isBit = snake
-    //   .slice(1)
-    //   .some((ele) => ele.x === snake[0].x && ele.y === snake[0].y);
-    // if (isBit) {
-    //   gameOver();
-    //   return;
-    // }
+    const isBit = snake
+      .slice(1)
+      .some((ele) => ele.x === snake[0].x && ele.y === snake[0].y);
+    if (isBit) {
+      gameOver();
+      return;
+    }
 
     let newSnake = [...snake];
     if (direction === "UP") {
@@ -133,46 +128,35 @@ export default function Home() {
     }
 
     // checking if food was eaten on not
-    // if (newSnake[0].x === food.x && newSnake[0].y === food.y) {
-    //   // Ate Food
-    //   setScore((sco) => sco + 1);
-    //   renderFood();
-    // } else {
-    //   newSnake.pop();
-    // }
-    newSnake.pop()
+    if (newSnake[0].x === food.x && newSnake[0].y === food.y) {
+      // Ate Food
+      setScore((sco) => sco + 1);
+      renderFood();
+    } else {
+      newSnake.pop();
+    }
+
     setSnake(newSnake);
   }
 
-  function updateDirection() {
-    let new_dir = Math.floor(Math.random() * 4);
-    
-    if (direction === "UP" || direction === "DOWN") {
-      while (new_dir === 0 || new_dir === 2) {
-        new_dir = Math.floor(Math.random() * 4);
-      }
-    }
-  
-    if (direction === "LEFT" || direction === "RIGHT") {
-      while (new_dir === 1 || new_dir === 3) {
-        new_dir = Math.floor(Math.random() * 4);
-      }
-    }
-    console.log(new_dir)
+  function updateDirection(e) {
+    let key = e.code;
 
-    if (new_dir === 0) setDirection("UP");
-    if (new_dir === 1) setDirection("LEFT");
-    if (new_dir === 2) setDirection("DOWN");
-    if (new_dir === 3) setDirection("RIGHT");
-
-    //updateGame();
+    switch (key) {
+      case "ArrowUp":
+        if (direction !== "DOWN") setDirection("UP");
+        break;
+      case "ArrowDown":
+        if (direction !== "UP") setDirection("DOWN");
+        break;
+      case "ArrowLeft":
+        if (direction !== "RIGHT") setDirection("LEFT");
+        break;
+      case "ArrowRight":
+        if (direction !== "LEFT") setDirection("RIGHT");
+        break;
+    }
   }
-  
-  // useEffect(() => {
-  //   //console.log(direction + "   chuttad");
-  //   renderBoard()
-  // }, [direction]);
-  
 
   // Handle Events and Effects
   useEffect(() => {
@@ -180,7 +164,11 @@ export default function Home() {
     return () => clearInterval(moveSnake);
   });
 
-  
+  useEffect(() => {
+    document.addEventListener("keydown", updateDirection);
+
+    return () => document.removeEventListener("keydown", updateDirection);
+  });
 
   return (
     <main className='main'>
