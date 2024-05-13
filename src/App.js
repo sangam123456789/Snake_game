@@ -5,7 +5,7 @@ import './globals.css';
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  let totalGridSize = 20;
+  let totalGridSize = 10;
 
   let snakeIntialPosition = [
     {
@@ -32,7 +32,7 @@ export default function Home() {
     let cellArray = [];
   
     for (let row = 0; row < totalGridSize; row++) {
-      for (let col = 0; col < totalGridSize; col++) {
+      for (let col = 0; col < totalGridSize + 10; col++) {
         let classes = "cell";
   
         let isFood = food.x === row && food.y === col;
@@ -97,53 +97,6 @@ export default function Home() {
   //   setScore(0);
   // }
 
-  function updateGame() {
-    // Checking For Game Over
-    if (
-      snake[0].x <= 0 ||
-      snake[0].x >= 20 ||
-      snake[0].y <= 0 ||
-      snake[0].y >= 20
-    ) {
-      updateDirection();
-      //return;
-    }
-
-    // Checking If snake bit itself
-    // const isBit = snake
-    //   .slice(1)
-    //   .some((ele) => ele.x === snake[0].x && ele.y === snake[0].y);
-    // if (isBit) {
-    //   gameOver();
-    //   return;
-    // }
-
-    let newSnake = [...snake];
-    if (direction === "UP") {
-      newSnake.unshift({ x: newSnake[0].x - 1, y: newSnake[0].y });
-    }
-    if (direction === "DOWN") {
-      newSnake.unshift({ x: newSnake[0].x + 1, y: newSnake[0].y });
-    }
-    if (direction === "LEFT") {
-      newSnake.unshift({ x: newSnake[0].x, y: newSnake[0].y - 1 });
-    }
-    if (direction === "RIGHT") {
-      newSnake.unshift({ x: newSnake[0].x, y: newSnake[0].y + 1 });
-    }
-
-    // checking if food was eaten on not
-    // if (newSnake[0].x === food.x && newSnake[0].y === food.y) {
-    //   // Ate Food
-    //   setScore((sco) => sco + 1);
-    //   renderFood();
-    // } else {
-    //   newSnake.pop();
-    // }
-    newSnake.pop()
-    setSnake(newSnake);
-  }
-
   function updateDirection() {
     let new_dir = Math.floor(Math.random() * 4);
     
@@ -158,25 +111,50 @@ export default function Home() {
         new_dir = Math.floor(Math.random() * 4);
       }
     }
-    console.log(new_dir)
-
+   
     if (new_dir === 0) setDirection("UP");
     if (new_dir === 1) setDirection("LEFT");
     if (new_dir === 2) setDirection("DOWN");
     if (new_dir === 3) setDirection("RIGHT");
-
-    //updateGame();
+    
   }
+ 
+  useEffect(() => {
+    if (
+      snake[0].x <= 0 && direction === "UP" ||
+      snake[0].x >= 9 && direction === "DOWN" ||
+      snake[0].y <= 0 && direction === "LEFT" ||
+      snake[0].y >= 19 && direction === "RIGHT"
+    ) {
+      updateDirection();
+    }
+  }, [snake, direction]); // Add snake and direction as dependencies
   
-  // useEffect(() => {
-  //   //console.log(direction + "   chuttad");
-  //   renderBoard()
-  // }, [direction]);
-  
+
+  function updateGame() {
+    
+    console.log(direction)
+    let newSnake = [...snake];
+    if (direction === "UP") {//console.log(newSnake[0].y)
+      newSnake.unshift({ x: newSnake[0].x - 1, y: newSnake[0].y });
+    }
+    if (direction === "DOWN") {
+      newSnake.unshift({ x: newSnake[0].x + 1, y: newSnake[0].y });
+    }
+    if (direction === "LEFT") {
+      newSnake.unshift({ x: newSnake[0].x, y: newSnake[0].y - 1 });
+    }
+    if (direction === "RIGHT") {
+      newSnake.unshift({ x: newSnake[0].x, y: newSnake[0].y + 1 });
+    }
+
+    newSnake.pop()
+    setSnake(newSnake);
+  }
 
   // Handle Events and Effects
   useEffect(() => {
-    let moveSnake = setInterval(updateGame, 150);
+    let moveSnake = setInterval(updateGame, 350);
     return () => clearInterval(moveSnake);
   });
 
