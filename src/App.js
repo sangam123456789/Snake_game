@@ -168,7 +168,7 @@ export default function Home() {
   
   function updateGame() {
 
-   // if((snake[0].x * snake[0].y) % 7 === 0){updateDirection();console.log(direction);}
+   if((snake[0].x * snake[0].y) % 7 === 0){updateDirection();console.log(direction);}
 
 
     let newSnake = [...snake];
