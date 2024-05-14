@@ -72,7 +72,7 @@ export default function Home() {
         } else {
           // Apply hover effect class when hovered
           if (isHovered) {
-            classes += " hover";
+            classes += " hovere";
           }
           cellArray.push(
             <div
@@ -128,13 +128,19 @@ export default function Home() {
   }
  
   function startGame() {
-    setGameStarted(true);
+    if(gameStarted === false){
+      setGameStarted(true);
+    }
+    else{
+      setGameStarted(false);
+    }
   }
   
   function gameOver() {
     // Reset the game state
     setSnake(snakeIntialPosition);
     setScore(0);
+    setGameStarted(false);
     // Show game over alert
     alert("Game Over!");
   }
@@ -151,7 +157,7 @@ export default function Home() {
       snake[0].x <= 0 && direction === "UP" ||
       snake[0].x >= 9 && direction === "DOWN" ||
       snake[0].y <= 0 && direction === "LEFT" ||
-      snake[0].y >= 19 && direction === "RIGHT"
+      snake[0].y >= 19 && direction === "RIGHT" 
     ) {
       updateDirection();
     }
@@ -159,7 +165,7 @@ export default function Home() {
   
   function updateGame() {
 
-    if((snake[0].x * snake[0].y) % 7 == 0){updateDirection();console.log(direction)}
+   // if((snake[0].x * snake[0].y) % 7 === 0){updateDirection();console.log(direction);}
 
 
     let newSnake = [...snake];
@@ -190,7 +196,7 @@ export default function Home() {
 
   return (
     <main className='main'>
-      <button onClick={startGame}>Start Game</button>
+      <button onClick={startGame}>Start/Pause Game</button>
       <div className='score'>
         Score : <span>{score}</span>
       </div>
@@ -198,4 +204,4 @@ export default function Home() {
     </main>
   );
 }
-``
+
