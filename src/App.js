@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import './globals.css';
+import gamesound from './music.mp3'
 
 import { useEffect, useState } from "react";
 
@@ -31,7 +32,7 @@ export default function Home() {
   const [directions, setDirections] = useState(Array(level).fill("LEFT"));
   const [gameStarted, setGameStarted] = useState(false);
   const [hoveredCell, setHoveredCell] = useState({ x: -1, y: -1 });
-
+  
   function renderBoard() {
     let cellArray = [];
   
@@ -63,7 +64,7 @@ export default function Home() {
             <div
               key={`${row}-${col}`}
               className={classes}
-              onMouseEnter={handleFoodHover} // Only bind event to food cell
+              onMouseEnter={handleFoodHover}
             ></div>
           );
         } else if (isSnakeHead || isSnakeBody) {
@@ -100,6 +101,7 @@ export default function Home() {
   function handleFoodHover() {
     if(!gameStarted)return;
     // Generate new random coordinates for the food
+  
     let randomX = Math.floor(Math.random() * totalGridSize);
     let randomY = Math.floor(Math.random() * totalGridSize);
     setScore((sco) => sco + 10);
@@ -169,7 +171,7 @@ export default function Home() {
   }, [score]);
   
   useEffect(() => {
-    if(score >= 20 && gameStarted){
+    if(score >= 40 && gameStarted){
       if(level >= 3){alert("Congratulations");
       setGameStarted(false);
       setLevel(1);
@@ -247,7 +249,7 @@ export default function Home() {
   useEffect(() => {
     let moveSnake;
     if (gameStarted) {
-      moveSnake = setInterval(updateGame, 150);
+      moveSnake = setInterval(updateGame, 100);
     }
     return () => clearInterval(moveSnake);
   });
@@ -256,6 +258,12 @@ export default function Home() {
     <main className='main'>
       <div>
         <button onClick={startGame} className='butn'>Start/Pause Game</button>
+        {gameStarted && (
+          <audio autoPlay loop>
+            <source src={gamesound} type="audio/mp3" />
+            Your browser does not support the audio element.
+          </audio>
+        )}
       </div>
       <div className='score'>
         Score : <span>{score}</span>
