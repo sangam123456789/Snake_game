@@ -5,7 +5,7 @@
   
   .main {
     background-color: rgb(250, 250, 250);
-    height: 100vh;
+    height: 90vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -26,10 +26,10 @@
   .board {
     display: grid;
     grid-template-columns: repeat(20, 30px);
-    grid-template-rows: repeat(20, 30px);
+    grid-template-rows: repeat(10, 30px);
     width: max-content;
     gap: 1px;
-    border: 1px solid #e1e1e1;
+    border: 3px solid #03b781;
   }
   
   .cell {
@@ -61,5 +61,30 @@
     width: 200px;
     font-size: 15px;
     font-weight: bold;
-    margin-top: 150px;
+  }
+
+  .alert {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #d8091a;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .congratulations {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   }

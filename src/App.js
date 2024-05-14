@@ -2,13 +2,14 @@ import logo from './logo.svg';
 import './App.css';
 import './globals.css';
 import gamesound from './music.mp3'
+import foodaudio from  './food.mp3'
 
 import { useEffect, useState } from "react";
 
 export default function Home() {
   let totalGridSize = 10;
   const [level, setLevel] = useState(1);
- 
+  const [numberOfLevels, setNumberOfLevels] = useState(3);
   
   const generateSnakeInitialPosition = () => {
     const ix = Math.floor(Math.random() * totalGridSize);
@@ -32,7 +33,8 @@ export default function Home() {
   const [directions, setDirections] = useState(Array(level).fill("LEFT"));
   const [gameStarted, setGameStarted] = useState(false);
   const [hoveredCell, setHoveredCell] = useState({ x: -1, y: -1 });
-  
+  const [audio] = useState(new Audio(foodaudio));
+
   function renderBoard() {
     let cellArray = [];
   
@@ -64,7 +66,7 @@ export default function Home() {
             <div
               key={`${row}-${col}`}
               className={classes}
-              onMouseEnter={handleFoodHover}
+              onClick={handleFoodHover}
             ></div>
           );
         } else if (isSnakeHead || isSnakeBody) {
@@ -110,6 +112,7 @@ export default function Home() {
       x: randomX,
       y: randomY,
     });
+    audio.play();
   }
 
   function handleSnakeHover(x, y) {
@@ -159,7 +162,14 @@ export default function Home() {
     setScore(0);
     setGameStarted(false);
     // Show game over alert
-    alert("Game Over!");
+    const alertBox = document.createElement("div");
+    alertBox.classList.add("alert");
+    alertBox.textContent = "Game Over!";
+    document.body.appendChild(alertBox);
+    // Remove the alert after a delay
+    setTimeout(() => {
+    document.body.removeChild(alertBox);
+  }, 2000);
     
   }
 
@@ -171,11 +181,19 @@ export default function Home() {
   }, [score]);
   
   useEffect(() => {
-    if(score >= 40 && gameStarted){
-      if(level >= 3){alert("Congratulations");
-      setGameStarted(false);
-      setLevel(1);
-      setScore(0);}
+    if(score >= 20 && gameStarted){
+      if(level >= numberOfLevels){
+        const alertBox = document.createElement("div");
+        alertBox.classList.add("congratulations");
+        alertBox.textContent = "Congratulations! You've completed all levels.";
+        document.body.appendChild(alertBox);
+        // Remove the alert after a delay
+        setTimeout(() => {
+          document.body.removeChild(alertBox);
+        }, 2000);
+        setGameStarted(false);
+        setLevel(1);
+        setScore(0);}
       else{
         setLevel((prevLevel) => prevLevel + 1);
         setScore(0);
@@ -254,9 +272,25 @@ export default function Home() {
     return () => clearInterval(moveSnake);
   });
 
+  const handleNumberOfLevelsChange = (e) => {
+    const value = parseInt(e.target.value);
+    setNumberOfLevels(value);
+  };
+
   return (
     <main className='main'>
-      <div>
+      
+        <div>
+          <label style = {{color: 'black', fontWeight:'bold', paddingRight: '170px'}}>
+              Number of Levels:
+              <input
+                type="number"
+                value={numberOfLevels}
+                onChange={handleNumberOfLevelsChange}
+              />
+          </label>
+        </div>
+        <div>
         <button onClick={startGame} className='butn'>Start/Pause Game</button>
         {gameStarted && (
           <audio autoPlay loop>
@@ -269,6 +303,12 @@ export default function Home() {
         Score : <span>{score}</span>
       </div>
       <div className='board'>{renderBoard()}</div>
+      <div style={{display: 'flex', flexDirection: 'column', width: '600px'}}>
+        <div style={{ color: 'blue', fontSize: '24px', fontWeight: 'bold' }}>Instructions</div>
+        <div>
+        <p style={{ color: 'black', fontSize: '20px', fontWeight: 'bold' }}>In this game you can select number of levels and to cross each level you have to score 20 points by eating the food. At any point of time if the score gets below 0, game will be over.</p>
+        </div>
+      </div>
     </main>
   );
 }
