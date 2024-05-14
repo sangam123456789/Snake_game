@@ -90,6 +90,7 @@ export default function Home() {
   }
   
   function handleFoodHover() {
+    if(!gameStarted)return;
     // Generate new random coordinates for the food
     let randomX = Math.floor(Math.random() * totalGridSize);
     let randomY = Math.floor(Math.random() * totalGridSize);
@@ -103,7 +104,9 @@ export default function Home() {
 
   function handleSnakeHover(x, y) {
     // Subtract 10 points when the mouse is hovered over a snake segment
-    setScore((sco) => sco - 10);
+    if(gameStarted){
+      setScore((sco) => sco - 10);
+    }
   }
 
   function updateDirection() {
@@ -147,7 +150,7 @@ export default function Home() {
 
   useEffect(() => {
     // Check if the score is -10 or less
-    if (score <= -10) {
+    if (score <= -10 && gameStarted) {
       gameOver(); // Trigger game over function
     }
   }, [score]);
@@ -196,7 +199,9 @@ export default function Home() {
 
   return (
     <main className='main'>
-      <button onClick={startGame}>Start/Pause Game</button>
+      <div>
+        <button onClick={startGame} className='butn'>Start/Pause Game</button>
+      </div>
       <div className='score'>
         Score : <span>{score}</span>
       </div>

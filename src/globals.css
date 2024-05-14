@@ -15,9 +15,12 @@
   }
   
   .score {
+    width: 150px;
+    padding-left: 55px;
     font-size: 20px;
     font-weight: bold;
     background-color: black;
+    border-radius: 5px;
   }
   
   .board {
@@ -51,4 +54,12 @@
     width: 30px;
     height: 30px;
     background-color: green;
+  }
+
+  .butn {
+    height: 30px;
+    width: 200px;
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 150px;
   }
