@@ -1,9 +1,10 @@
 import logo from './logo.svg';
 import './App.css';
 import './globals.css';
-import gamesound from './music.mp3'
-import foodaudio from  './food.mp3'
-
+import gamesound from './Music/music.mp3'
+import foodaudio from  './Music/food.mp3'
+import gameover from './Music/gameover.mp3'
+import congrats from './Music/congrats.mp3'
 import { useEffect, useState } from "react";
 
 export default function Home() {
@@ -33,7 +34,9 @@ export default function Home() {
   const [directions, setDirections] = useState(Array(level).fill("LEFT"));
   const [gameStarted, setGameStarted] = useState(false);
   const [hoveredCell, setHoveredCell] = useState({ x: -1, y: -1 });
-  const [audio] = useState(new Audio(foodaudio));
+  const [food_audio] = useState(new Audio(foodaudio));
+  const [gameover_audio] = useState(new Audio(gameover));
+  const [congrats_audio] = useState(new Audio(congrats));
 
   function renderBoard() {
     let cellArray = [];
@@ -112,7 +115,7 @@ export default function Home() {
       x: randomX,
       y: randomY,
     });
-    audio.play();
+    food_audio.play();
   }
 
   function handleSnakeHover(x, y) {
@@ -170,7 +173,7 @@ export default function Home() {
     setTimeout(() => {
     document.body.removeChild(alertBox);
   }, 2000);
-    
+   gameover_audio.play(); 
   }
 
   useEffect(() => {
@@ -183,6 +186,7 @@ export default function Home() {
   useEffect(() => {
     if(score >= 20 && gameStarted){
       if(level >= numberOfLevels){
+        congrats_audio.play();
         const alertBox = document.createElement("div");
         alertBox.classList.add("congratulations");
         alertBox.textContent = "Congratulations! You've completed all levels.";
@@ -190,10 +194,14 @@ export default function Home() {
         // Remove the alert after a delay
         setTimeout(() => {
           document.body.removeChild(alertBox);
-        }, 2000);
+        }, 6000);
         setGameStarted(false);
         setLevel(1);
-        setScore(0);}
+        setScore(0);
+        setTimeout(() => {
+            congrats_audio.pause();
+        }, 5000);
+      }  
       else{
         setLevel((prevLevel) => prevLevel + 1);
         setScore(0);
@@ -279,11 +287,11 @@ export default function Home() {
 
   return (
     <main className='main'>
-      
         <div>
           <label style = {{color: 'black', fontWeight:'bold', paddingRight: '170px'}}>
               Number of Levels:
               <input
+                style = {{padding: '5px'}}
                 type="number"
                 value={numberOfLevels}
                 onChange={handleNumberOfLevelsChange}
@@ -306,7 +314,7 @@ export default function Home() {
       <div style={{display: 'flex', flexDirection: 'column', width: '600px'}}>
         <div style={{ color: 'blue', fontSize: '24px', fontWeight: 'bold' }}>Instructions</div>
         <div>
-        <p style={{ color: 'black', fontSize: '20px', fontWeight: 'bold' }}>In this game you can select number of levels and to cross each level you have to score 20 points by eating the food. At any point of time if the score gets below 0, game will be over.</p>
+        <p style={{ color: 'black', fontSize: '20px', fontWeight: 'bold' }}>In this game you can select number of levels and to cross each level you have to score 20 points by eating the food and avoiding touching the snakes at the same time. At any point of time if the score gets below 0, game will be over.</p>
         </div>
       </div>
     </main>
